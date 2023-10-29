@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController _controller;
 
     [Header("Config player")]
+    public int HP;
     public float movimentSpeed = 3f;
     private Vector3 _direction;
 
@@ -17,8 +18,19 @@ public class PlayerController : MonoBehaviour
 
     [Header("Animation")]
     private Animator _animator;
-    private bool isWalking;
-    private bool isRunning;
+    private bool _isWalking;
+    private bool _isRunning;
+
+    [Header("Attack config")]
+    public ParticleSystem fxAttack;
+    public Transform hitBox;
+    [Range(0.2f, 1f)]
+    public float hitRange = 0.5f;
+    public Collider[] hitInfo;
+    public LayerMask hitMask;
+    public float amountDamage;
+
+    private bool _isAttacking;
 
    
 
@@ -50,37 +62,82 @@ public class PlayerController : MonoBehaviour
         float targetAngle = Mathf.Atan2(_direction.x, _direction.z) * Mathf.Rad2Deg;
         // Utiliza o ângulo encontrado e faz o objeto virar
         transform.rotation = Quaternion.Euler(0, targetAngle, 0);
-        isWalking = true;
+        _isWalking = true;
     }
     else
     {
-        isWalking = false;
+        _isWalking = false;
     }
 
-    if (Input.GetKey(keyRun) && isWalking)
+    if (Input.GetKey(keyRun) && _isWalking)
     {
-        isRunning = true;
-        isWalking = false;
+        _isRunning = true;
+        _isWalking = false;
     }
     else
     {
-        isRunning = false;
+        _isRunning = false;
     }
 
-    _controller.Move(_direction * (isRunning ? speedRun : movimentSpeed) * Time.deltaTime);
-    _animator.SetBool("isWalking", isWalking);
-    _animator.SetBool("isRunning", isRunning);
+    _controller.Move(_direction * (_isRunning ? speedRun : movimentSpeed) * Time.deltaTime);
+    _animator.SetBool("isWalking", _isWalking);
+    _animator.SetBool("isRunning", _isRunning);
 }
 
 
     private void Attack()
     {
-         if(Input.GetKeyDown(KeyCode.Space))
+         if(Input.GetKeyDown(KeyCode.Space) && !_isAttacking)
          {
+             _isAttacking = true;
              _animator.SetTrigger("Attack");
+             fxAttack.Emit(1);
+
+             hitInfo = Physics.OverlapSphere(hitBox.position, hitRange, hitMask);
+
+             foreach(Collider c in hitInfo)
+             {
+                 c.gameObject.SendMessage("GetHit", amountDamage, SendMessageOptions.DontRequireReceiver);
+             }
+
          }
     }
 
+// Essa funcao sera chamada pelo script da animacao Attack (AttackIsDone)
+     public void AttackIsDone()
+    {
+        _isAttacking = false;
+             Debug.Log("Attack is Done");
+    }
 
+
+    private  void OnDrawGizmosSelected() 
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(hitBox.position, hitRange);   
+    }
+
+
+    void GetHit(int amount)
+    {
+        HP -= amount;
+        if(HP > 0)
+        {
+            _animator.SetTrigger("Hit");
+        }
+        else
+        {
+            _animator.SetTrigger("Death");
+        }
+    }
+
+
+private void OnTriggerEnter(Collider other)
+{
+    if(other.gameObject.tag == "TakeDamage")
+    {
+        GetHit(1);
+    }
+}
 
 }

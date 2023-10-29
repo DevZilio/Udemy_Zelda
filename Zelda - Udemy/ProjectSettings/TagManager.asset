@@ -7,16 +7,17 @@ TagManager:
   - CamWall
   - CamHalf1
   - CamHalf2
+  - TakeDamage
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - hitLayer
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Enemie
+  - TakeDamage
+  - Player
   - 
   - 
   - 
