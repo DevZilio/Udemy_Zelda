@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 
+    private GameManager _gameManager;
     private CharacterController _controller;
 
     [Header("Config player")]
@@ -32,6 +33,13 @@ public class PlayerController : MonoBehaviour
 
     private bool _isAttacking;
 
+    [Header("Jump Controller")]
+    public Transform groundCheck;
+    public LayerMask whatIsGround;
+    public float gravity = -19.62f;
+    public float jumpHeight;
+    [SerializeField]private bool _isGrounded;
+    private Vector3 _velocity;
    
 
 
@@ -40,17 +48,25 @@ public class PlayerController : MonoBehaviour
     {
         _controller = GetComponent<CharacterController>();
         _animator = GetComponentInChildren<Animator>();
+        _gameManager = FindObjectOfType(typeof(GameManager)) as GameManager;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(_gameManager.gameState != GameState.GAMEPLAY) {return;}
         Moviment();
         Attack();
+        Jump();
+        UpdateAnimator();
+    }
+
+    private void FixedUpdate() {
+        _isGrounded = Physics.CheckSphere(groundCheck.position, 0.3f, whatIsGround);
     }
 
    private void Moviment()
-{
+    {
     float horizontal = Input.GetAxis("Horizontal");
     float vertical = Input.GetAxis("Vertical");
 
@@ -80,9 +96,31 @@ public class PlayerController : MonoBehaviour
     }
 
     _controller.Move(_direction * (_isRunning ? speedRun : movimentSpeed) * Time.deltaTime);
+
+    if(_isGrounded && _velocity.y < 0)
+    {
+        _velocity.y = -2;
+    }
+
+    _velocity.y += gravity * Time.deltaTime;
+    _controller.Move(_velocity * Time.deltaTime);
+    }
+
+    private void UpdateAnimator()
+    {
     _animator.SetBool("isWalking", _isWalking);
     _animator.SetBool("isRunning", _isRunning);
-}
+    _animator.SetBool("isGrounded", _isGrounded);
+        
+    }
+
+    private void Jump()
+    {
+        if(Input.GetKeyDown(KeyCode.C) && _isGrounded)
+        {
+            _velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
+        }
+    }
 
 
     private void Attack()
@@ -107,7 +145,8 @@ public class PlayerController : MonoBehaviour
      public void AttackIsDone()
     {
         _isAttacking = false;
-             Debug.Log("Attack is Done");
+        
+            //  Debug.Log("Attack is Done");
     }
 
 
@@ -127,6 +166,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            _gameManager.ChangeGameState(GameState.GAMEOVER);
             _animator.SetTrigger("Death");
         }
     }

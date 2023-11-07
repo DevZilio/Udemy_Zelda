@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.UI;
+using TMPro;
 
 public enum enemyState
 {
@@ -12,13 +14,24 @@ public enum enemyState
     EXPLORE,
     FURY,
     ATTACK,
+    SHIELD,
     DEAD
+}
+
+public enum GameState
+{
+    GAMEPLAY,
+    GAMEOVER,
 }
 
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Slime IA")]
+    [Header("Game State Manager")]
+    public GameState gameState;
+    
+    
+    [Header("Slime AI")]
     public float slimeIdleWaitTime;
     public Transform[] slimeWayPoints;
     public float slimeDistanceToAttack = 2.25f;
@@ -27,8 +40,32 @@ public class GameManager : MonoBehaviour
     public float slimeLookAtSpeed = 1f;
     public float slimeTimeFollowLimit = 2f;
 
+    [Header("Turtle AI")]
+    public float turtleIdleWaitTime;
+    public Transform[] turtleWayPoints;
+    public float turtleDistanceToAttack = 2.25f;
+    public float turtleAlertTime = 3f;
+    public float turtleAttackDelay = 1f;
+    public float turtleLookAtSpeed = 1f;
+    public float turtleTimeFollowLimit = 2f;
+    public float turtleTimeShield = 3f;
+
+
+    [Header("UI")]
+    public TextMeshProUGUI textGemsUI;
+
+
     [Header("Player")]
     public Transform player;
+    public int gems;
+
+    [Header("Drop Item")]
+    public GameObject gemPrefab;
+    public int percDrop = 25;
+
+
+
+
 
     [Header("Rain manager")]
     public PostProcessVolume postB;
@@ -40,6 +77,8 @@ public class GameManager : MonoBehaviour
 
     private void Start() {
         _rainModule = rainParticle.emission;
+
+        textGemsUI.text = gems.ToString();
     }
 
 
@@ -101,5 +140,23 @@ public class GameManager : MonoBehaviour
             postB.weight = 0;
           break;
       }
+  }
+
+  public void ChangeGameState(GameState newState)
+  {
+      gameState = newState;
+  }
+
+  public void SetGems(int amount)
+  {
+      gems += amount;
+      textGemsUI.text = gems.ToString();
+  }
+
+  public bool Perc(int p)
+  {
+      int temp = Random.Range(0,100);
+      bool retorno = temp <= p ? true : false;
+      return retorno;
   }
 }

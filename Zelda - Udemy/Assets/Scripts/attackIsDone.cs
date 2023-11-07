@@ -20,16 +20,22 @@ public class attackIsDone : StateMachineBehaviour
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         PlayerController attackIsDonePlayer = animator.GetComponentInParent<PlayerController>();
-        SlimeIA attackIsDoneEnemy = animator.GetComponentInParent<SlimeIA>();
+        SlimeAI attackIsDoneSlime = animator.GetComponent<SlimeAI>();
+        TurtleAI attackIsDoneTurtle = animator.GetComponent<TurtleAI>();
         
         if (attackIsDonePlayer != null)
         {
             attackIsDonePlayer.AttackIsDone();
         }
 
-        if (attackIsDoneEnemy != null)
+        if (attackIsDoneSlime != null)
         {
-            attackIsDoneEnemy.AttackIsDone();
+            attackIsDoneSlime.AttackIsDone();
+        }
+
+        if (attackIsDoneTurtle != null)
+        {
+            attackIsDoneTurtle.AttackIsDone();
         }
 
         // Debug.Log("Exit Animation");

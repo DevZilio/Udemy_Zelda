@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99a6414c677984190943ceb28e5cb45c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameState: 0
   slimeIdleWaitTime: 5
   slimeWayPoints:
   - {fileID: 0}
@@ -58,4 +59,13 @@ MonoBehaviour:
   slimeAttackDelay: 1
   slimeLookAtSpeed: 8
   slimeTimeFollowLimit: 2
+  textGemsUI: {fileID: 0}
   player: {fileID: 0}
+  gems: 0
+  gemPrefab: {fileID: 4185330910215664177, guid: 283fb45b620274a53954c933948896e9, type: 3}
+  percDrop: 100
+  postB: {fileID: 0}
+  rainParticle: {fileID: 0}
+  rainRateOverTime: 500
+  rainIncrement: 50
+  rainIncrementDelay: 0.5

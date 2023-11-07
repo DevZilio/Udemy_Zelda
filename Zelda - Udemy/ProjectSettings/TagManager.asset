@@ -8,6 +8,7 @@ TagManager:
   - CamHalf1
   - CamHalf2
   - TakeDamage
+  - Collectable
   layers:
   - Default
   - TransparentFX
@@ -19,7 +20,7 @@ TagManager:
   - TakeDamage
   - Player
   - PostProcessing
-  - 
+  - CamTriggers
   - 
   - 
   - 
